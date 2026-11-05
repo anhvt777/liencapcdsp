@@ -1655,7 +1655,7 @@ function downloadManualCollectionTemplate(){
   const headers=['Mã học sinh','Họ tên','Lớp','Khoản thu','Số tiền','Ngày thu','Hình thức','Ghi chú'];
   const samples=[['LCSP-6A1-01','Nguyễn Văn A','6A1','Bảo hiểm thân thể',100000,new Date().toISOString().slice(0,10),'Thu qua thủ quỹ',''],['LCSP-6A1-02','Trần Thị B','6A1','Bảo hiểm y tế',683100,new Date().toISOString().slice(0,10),'Chuyển thẳng cho trường','']];
   const lines=samples.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','));
-  download('Mau-nhap-thu-thu-cong-THCS-So-2-Hieu-Giang.csv','\uFEFF'+headers.join(',')+'\r\n'+lines.join('\r\n'),'text/csv;charset=utf-8');
+  download('Mau-nhap-thu-thu-cong-Lien-Cap-CDSP-Quang-Tri.csv','\uFEFF'+headers.join(',')+'\r\n'+lines.join('\r\n'),'text/csv;charset=utf-8');
 }
 
 function unpaidCashCandidates(students,transactions){
@@ -1766,7 +1766,7 @@ async function buildNoticeEntries(){
   for(const group of groups){
     const remark=noticeRemark(group.student,group.items),payload=buildVietQrPayload(config,group.total,remark),qr=qrDataUrl(payload,420);
     const bundle={remark,studentCode:group.student.code,itemIds:group.items.map(x=>x.id),amount:group.total,deadline,createdAt:now};
-    bundles.push(bundle);entries.push({...group,remark,qr,deadline,message,school:{parentUnit:receiptConfig.parentUnit||'TRƯỜNG CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',schoolName:receiptConfig.schoolName||'TRƯỜNG PHỔ THÔNG LIÊN CẤP CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',schoolAddress:receiptConfig.schoolAddress||'',head:receiptConfig.head||''},qrConfig:config});
+    bundles.push(bundle);entries.push({...group,remark,qr,deadline,message,school:{parentUnit:receiptConfig.parentUnit||'',schoolName:receiptConfig.schoolName||'TRƯỜNG PHỔ THÔNG LIÊN CẤP CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',schoolAddress:receiptConfig.schoolAddress||'',head:receiptConfig.head||''},qrConfig:config});
   }
   await saveNoticeBundles(bundles);return entries;
 }
@@ -1831,7 +1831,7 @@ async function renderNoticeTool(students,transactions,catalog){
 }
 
 function receiptConfigDefaults(){
-  return {key:'receiptConfig',parentUnit:'TRƯỜNG CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',schoolName:'TRƯỜNG PHỔ THÔNG LIÊN CẤP CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',schoolAddress:'',unitCode:'',transferPrefix:'XN',cashPrefix:'PT',preparer:'',cashier:'',accountant:'',head:''};
+  return {key:'receiptConfig',parentUnit:'',schoolName:'TRƯỜNG PHỔ THÔNG LIÊN CẤP CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',schoolAddress:'',unitCode:'',transferPrefix:'XN',cashPrefix:'PT',preparer:'',cashier:'',accountant:'',head:''};
 }
 async function getReceiptConfig(){
   const stored=(await request('meta','get','receiptConfig'))||{},base=receiptConfigDefaults();
@@ -2158,7 +2158,7 @@ async function exportAllClassFees(){
   zip.file('xl/styles.xml',allFeesExcelStyles());
   sheets.forEach((s,idx)=>zip.file(`xl/worksheets/sheet${idx+1}.xml`,s.xml));
   const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  download(`Theo-doi-tat-ca-khoan-thu-THCS-So-2-Hieu-Giang-${new Date().toISOString().slice(0,10)}.xlsx`,blob,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  download(`Theo-doi-tat-ca-khoan-thu-Lien-Cap-CDSP-Quang-Tri-${new Date().toISOString().slice(0,10)}.xlsx`,blob,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   const missingDob=students.filter(s=>!allFeesStudentBirthDate(s)).length;
   toast(`Đã xuất ${sheets.length} sheet lớp, mỗi học sinh một dòng.${missingDob?` ${missingDob} học sinh chưa có ngày sinh.`:''}`);
 }
@@ -2323,7 +2323,7 @@ async function exportPaidReport(){
   zip.folder('xl').file('styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="4"><font><sz val="11"/><name val="Times New Roman"/></font><font><b/><sz val="14"/><name val="Times New Roman"/></font><font><b/><sz val="16"/><name val="Times New Roman"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Times New Roman"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE7F3F0"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FF078778"/></patternFill></fill></fills><borders count="2"><border/><border><left style="thin"><color rgb="FF9BB8B2"/></left><right style="thin"><color rgb="FF9BB8B2"/></right><top style="thin"><color rgb="FF9BB8B2"/></top><bottom style="thin"><color rgb="FF9BB8B2"/></bottom></border></borders><cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" applyAlignment="1"><alignment horizontal="center"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" applyAlignment="1"><alignment horizontal="center"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" applyAlignment="1"><alignment vertical="center"/></xf><xf numFmtId="3" fontId="0" fillId="0" borderId="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="3" borderId="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs></styleSheet>');
 
   const sheetRows=[];
-  sheetRows.push(excelRow(1,[{v:'TRƯỜNG CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',s:1}],22));
+  sheetRows.push(excelRow(1,[{v:'',s:1}],22));
   sheetRows.push(excelRow(2,[{v:'TRƯỜNG PHỔ THÔNG LIÊN CẤP CAO ĐẲNG SƯ PHẠM QUẢNG TRỊ',s:1}],22));
   sheetRows.push(excelRow(4,[{v:'DANH SÁCH HỌC SINH ĐÃ NỘP KHOẢN THU',s:2}],28));
   sheetRows.push(excelRow(5,[{v:`Phạm vi: ${scopeLabel} · Khoản thu: ${selectedLabels.join(' + ')} · Thời gian thu: ${periodLabel}`,s:1}],22));
