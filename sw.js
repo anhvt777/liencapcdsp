@@ -1,6 +1,6 @@
 const CACHE_PREFIX = 'so-thu-hoc-sinh-liencapcdsp-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v1-lcsp';
-const SHELL = ['./', './index.html', './styles.css', './app.js', './insurance.js', './manifest.json', './icon.svg', './vendor/qrcode.min.js', './vendor/jszip.min.js'];
+const CACHE_NAME = CACHE_PREFIX + 'v2-opening-bidv';
+const SHELL = ['./', './index.html', './styles.css', './app.js', './insurance.js', './opening-collections.js', './manifest.json', './icon.svg', './vendor/qrcode.min.js', './vendor/jszip.min.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)));
   self.skipWaiting();
