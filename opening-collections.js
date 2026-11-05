@@ -3,7 +3,7 @@ function openingText(v){return String(v??'').trim();}
 function openingKey(student,fee){return student.code+'|'+fee;}
 function openingFee(v){const s=slug(v);if(s==='bhyt'||s.includes('bao hiem y te'))return 'insurance';if(s==='bhtt'||s.includes('bao hiem than the'))return 'mandatory';return '';}
 function openingName(f){return f==='insurance'?'Bảo hiểm y tế':'Bảo hiểm thân thể';}
-function openingDate(v){const d=normalizeDate(v);return /^\\d{4}-\\d{2}-\\d{2}$/.test(d)?d:'';}
+function openingDate(v){const d=normalizeDate(v);return /^\d{4}-\d{2}-\d{2}$/.test(d)?d:'';}
 function openingHeaderMap(headers){
  const h=headers.map(v=>slug(v));const ix=(parts)=>h.findIndex(v=>parts.some(p=>v===p||v.includes(p)));
  return {cl:ix(['lop']),name:ix(['ho va ten','ho ten']),birth:ix(['ngay sinh']),fee:ix(['khoan thu']),amount:ix(['so tien du kien','so tien']),date:ix(['ngay thu thuc te','ngay thu']),confirmed:ix(['xac nhan']),reference:ix(['so chung tu','tham chieu']),note:ix(['ghi chu'])};
