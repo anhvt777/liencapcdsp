@@ -2004,6 +2004,7 @@ async function handleReceiptTableClick(e){
 }
 
 async function refresh() {
+  if(typeof renderOpeningCollections==='function')await renderOpeningCollections();
   const [students,storedTransactions,history,qrConfig,noticeBundles]=await Promise.all([all('students'),all('transactions'),all('history'),request('meta','get','qrAccount'),getNoticeBundles()]);
   setNoticeBundleCache(noticeBundles);
   const transactions=reconcileTransactions(students,storedTransactions);
@@ -2444,6 +2445,7 @@ async function migrateSchool2StudentData(){
 }
 
 function wire() {
+  if(typeof wireOpeningCollections==='function')wireOpeningCollections();
   $$('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
   $$('[data-go]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.go)));
   $('#studentImportButton').onclick=$('#studentImportButton2').onclick=()=>$('#studentFileInput').click();
