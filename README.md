@@ -26,3 +26,13 @@ Repo: https://github.com/anhvt777/liencapcdsp
 
 ## Nguồn gốc
 Kế thừa mã nguồn tại: https://github.com/anhvt777/thcs_so2_hieugiang . Không sửa đổi repo nguồn.
+
+## Triển khai đối chiếu đầu kỳ 2026–2027 (05/11/2026)
+
+- Đối chiếu 714 hồ sơ với 202 học sinh trong danh sách còn thu theo **Lớp + Họ tên + Ngày sinh**; tất cả 202 khớp duy nhất.
+- 202 BHYT 683.100đ và 196 BHTT 120.000đ còn thu, tổng 398 món / 161.506.200đ; 6 trường hợp chưa có số tiền BHTT phải xác minh.
+- 512 học sinh ngoài danh sách chưa thu là **chờ xác minh đã thu**, không tự sinh giao dịch giả.
+- Mở tệp đối chiếu được cung cấp riêng, nhập sheet `06_Nhap_web` (hoặc lưu sheet này thành CSV) vào tab **Nhập dữ liệu**; phải chọn đúng cột tên/lớp/ngày sinh/BHYT/BHTT khi ghép cột.
+- Tab **Thu trước BIDV**: chọn bảng CSV xác nhận; chỉ dòng có `XÁC NHẬN` và tham chiếu chứng từ mới được ghi nhận, hỏi lại trước khi ghi. Khoản đã có nghĩa vụ trong hệ thống sẽ đối soát vào sổ giao dịch, ngăn xuất lại; khoản không có nghĩa vụ được lưu hồ sơ lịch sử tách biệt.
+- Tab **Bảng kê BIDV** và **Xuất QR theo món**: luôn bật `Chỉ xuất các khoản chưa thu`; cấu hình kỳ thu và mã định danh theo hợp đồng thực tế trước khi phát hành.
+- Chỉ lưu file danh sách học sinh và file xác nhận trên thiết bị trường, không upload lên repo public.
