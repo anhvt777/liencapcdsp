@@ -25,6 +25,7 @@
         <button class="nav-item" data-page="fees"><span class="nav-icon">▤</span>Khoản thu</button>
         <button class="nav-item" data-page="bidv-export"><span class="nav-icon">⇩</span>Bảng kê BIDV</button>
         <a class="nav-item qr-external-link" href="https://anhvt777.github.io/bidvqrgen/" target="_blank" rel="noopener noreferrer" aria-label="Mở công cụ tạo QR và thông báo nộp tiền trong tab mới"><span class="nav-icon">▦</span>Tạo QR & thông báo <span class="external-link-mark" aria-hidden="true">↗</span></a>
+        <button class="nav-item" data-page="opening"><span class="nav-icon">▣</span>Thu trước BIDV</button>
         <button class="nav-item" data-page="imports"><span class="nav-icon">⇧</span>Nhập dữ liệu</button>
         <button class="nav-item" data-page="receipts"><span class="nav-icon">▣</span>Phiếu thu / Xác nhận</button>
         <button class="nav-item" data-page="history"><span class="nav-icon">▣</span>Tra cứu & báo cáo</button>
@@ -322,7 +323,17 @@
         <div class="mapping-note"><span class="note-icon">i</span><div><strong>Nguyên tắc phát hành:</strong><p>Web chỉ cho cấp chứng từ khi giao dịch đã đối soát thành công, đúng học sinh, đúng món và đúng số tiền. Chứng từ bị hủy không bị xóa số; muốn phát hành lại sẽ dùng số mới.</p></div></div>
       </section>
 
-      <section class="page" id="page-imports">
+      <section class="page" id="page-opening">
+  <div class="page-heading"><div><span class="eyebrow">CHUYỂN ĐỔI SỐ LIỆU ĐẦU KỲ</span><h1>Thu trước BIDV</h1><p>Đưa khoản thu đã có chứng từ vào sổ lịch sử mà không giả lập giao dịch BIDV.</p></div></div>
+  <article class="panel">
+    <div class="panel-header"><div><h2>Xác nhận khoản đã thu trước triển khai</h2><p>Nhập file CSV hoặc XLSX với cột Lớp, Họ và tên, Ngày sinh, Khoản thu, Số tiền dự kiến, Ngày thu thực tế, Xác nhận, Số chứng từ / tham chiếu. Chỉ dòng có Xác nhận = XÁC NHẬN và số tham chiếu mới được ghi sổ.</p></div></div>
+    <div class="mapping-note"><span class="note-icon">!</span><div><strong>Không tự ghi nhận 512 học sinh là đã nộp.</strong><p>Chỉ sử dụng sổ thu, biên lai hoặc sao kê đã kiểm tra. Các món đã xác nhận và khớp khoản phải thu sẽ không được đưa vào QR/BIDV chưa thu; các khoản chưa có nghĩa vụ ghi trên web được lưu sổ lịch sử tách biệt.</p></div></div>
+    <button class="button button-primary" id="openingCollectionsButton">⇧ Nhập bảng xác nhận đã thu</button><input type="file" id="openingCollectionsInput" accept=".xlsx,.csv,.tsv,.txt" hidden>
+    <p class="table-note" id="openingCollectionsStatus">Chưa ghi nhận khoản thu trước BIDV.</p>
+    <div class="table-wrap"><table><thead><tr><th>Lớp</th><th>Học sinh</th><th>Khoản</th><th>Số tiền</th><th>Ngày thu</th><th>Chứng từ</th><th>Hạch toán</th></tr></thead><tbody id="openingCollectionsRows"><tr><td colspan="7">Chưa có dữ liệu.</td></tr></tbody></table></div>
+  </article>
+</section>
+<section class="page" id="page-imports">
         <div class="page-heading"><div><span class="eyebrow">CẬP NHẬT DỮ LIỆU</span><h1>Nhập dữ liệu</h1><p>Nhập danh sách học sinh trước, sau đó bổ sung báo cáo thu mới nhất.</p></div></div>
         <div class="import-cards">
           <article class="panel import-card"><div class="import-card-top"><span class="import-step">01</span><span class="import-card-icon student-icon">♧</span></div><span class="eyebrow">DỮ LIỆU GỐC NHÀ TRƯỜNG</span><h2>Danh sách học sinh</h2><p>Tự tìm dòng tiêu đề và nhận diện Tên lớp học, Mã số CĐ, Họ tên, Giới tính, Ngày sinh, Phân loại HS, BHYT, BHTT và Ghi chú. Chỉ Họ tên + Lớp là bắt buộc.</p><div class="file-types">Excel .xlsx · CSV .csv</div><button class="button button-outline full-button" id="studentImportButton2">Chọn file danh sách</button><div class="last-import" id="studentLastImport">Chưa nhập file</div></article>
@@ -434,7 +445,8 @@
   <div class="receipt-print-root" id="receiptPrintRoot" aria-hidden="true"></div>
   <script src="vendor/qrcode.min.js"></script>
   <script src="vendor/jszip.min.js"></script>
-  <script src="app.js?v=20261105lcsp1"></script>
+  <script src="app.js?v=20261105b"></script>
+  <script src="opening-collections.js?v=20261105b"></script>
   <script src="insurance.js"></script>
 </body>
 </html>
