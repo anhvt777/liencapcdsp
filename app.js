@@ -641,10 +641,10 @@ function prepareWorkflowPages(){
 function setPage(page) {
   if (page === 'insurance') page = 'dashboard';
   $$('.page').forEach(p => p.classList.toggle('active', p.id === `page-${page}`));
-  $('.nav-item[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  $$('.nav-item[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
   const group=NAV_PAGE_GROUPS[page]||'';
   setNavGroupExpanded(group,!!group);
-  $('.nav-group-toggle').forEach(b=>b.classList.toggle('active',b.dataset.navGroup===group));
+  $$('.nav-group-toggle').forEach(b=>b.classList.toggle('active',b.dataset.navGroup===group));
   const labels = {
     dashboard:['Tổng quan','Theo dõi tiến độ thu theo thời gian thực trên thiết bị này'],
     students:['Học sinh','Danh sách và số phải thu chi tiết theo từng học sinh'],
@@ -2489,8 +2489,8 @@ async function migrateSchool2StudentData(){
 
 function wire() {
   if(typeof wireOpeningCollections==='function')wireOpeningCollections();
-  $('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
-  $('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
+  $$('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
+  $$('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
     const isOpen=btn.getAttribute('aria-expanded')==='true';
     setNavGroupExpanded(btn.dataset.navGroup,!isOpen);
   }));
