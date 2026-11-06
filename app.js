@@ -2489,12 +2489,12 @@ async function migrateSchool2StudentData(){
 
 function wireNavigation(){
   if(document.documentElement.dataset.navigationReady==='1')return;
-  document.documentElement.dataset.navigationReady='1';
-  $('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
-  $('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
+  $$('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
+  $$('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
     setNavGroupExpanded(btn.dataset.navGroup,btn.getAttribute('aria-expanded')!=='true');
   }));
-  $('[data-go]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.go)));
+  $$('[data-go]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.go)));
+  document.documentElement.dataset.navigationReady='1';
 }
 async function inspectLocalStudentCount(){
   if(!db)return null;
