@@ -193,6 +193,7 @@ function guessColumn(headers, field) {
     reportClass: ['dia chi','lop','khoi lop'],
     reportPersonalId: ['thong tin bo sung 1','sdd ca nhan','so dinh danh ca nhan','ma dinh danh ca nhan'],
     reportCustomerName: ['ten khach hang','ten tai khoan dinh danh'],
+    reportBirthDate: ['ngay sinh hoc sinh','ngay sinh','ngay thang nam sinh'],
     serviceLevel1: ['dich vu cap 1'],
     serviceLevel2: ['dich vu cap 2','khoan nop','khoan thu'],
     invoiceId: ['ma hoa don','so hoa don'],
@@ -227,7 +228,7 @@ function openImportModal(kind, file, rows) {
     ? longFormat
       ? `<div class="mapping-grid">${fieldSelect('map-code','Mã học sinh',headers,'code',true)}${fieldSelect('map-payment-code','Mã HS theo khoản nộp',headers,'paymentCode',true)}${fieldSelect('map-name','Họ và tên',headers,'name',true)}${fieldSelect('map-class','Lớp',headers,'className',true)}${fieldSelect('map-fee-category','Khoản nộp (BHYT/BHTT)',headers,'studentFeeCategory',true)}${fieldSelect('map-fee-amount','Số tiền phải thu',headers,'studentFeeAmount',true)}</div><p class="mapping-intro">Mỗi học sinh có một dòng BHYT và một dòng BHTT. Web tự ghép hai dòng theo mã học sinh và giữ mã từng khoản để đối soát với cột “Mã khách hàng” của ngân hàng.</p>`
       : `<div class="mapping-grid">${fieldSelect('map-code','Mã học sinh nội bộ (nếu file đã có)',headers,'code')}${fieldSelect('map-external-code','Mã số CĐ / mã ngoài (nếu có)',headers,'externalCode')}${fieldSelect('map-name','Họ và tên',headers,'name',true)}${fieldSelect('map-class','Lớp',headers,'className',true)}${fieldSelect('map-gender','Giới tính',headers,'gender')}${fieldSelect('map-birth-date','Ngày sinh',headers,'birthDate')}${fieldSelect('map-student-type','Phân loại HS',headers,'studentType')}${fieldSelect('map-registration-info','Đăng ký khoản khác (nếu có)',headers,'registrationInfo')}${fieldSelect('map-due-insurance','Bảo hiểm y tế (BHYT)',headers,'dueInsurance')}${fieldSelect('map-due-mandatory','Bảo hiểm thân thể (BHTT)',headers,'dueMandatory')}${fieldSelect('map-note','Ghi chú',headers,'note')}</div><p class="mapping-intro"><strong>Mẫu Phổ thông Liên cấp CĐSP Quảng Trị:</strong> web chỉ nhận các trường thực tế có trong file trường: Mã số CĐ, Họ tên, Lớp, Giới tính, Ngày sinh, Phân loại HS, Đăng ký, BHYT, BHTT và Ghi chú. Không tự suy đoán phụ huynh, điện thoại, CCCD hoặc dữ liệu khác.</p>`
-    : `<div class="mapping-grid">${fieldSelect('map-amount','Số tiền hóa đơn / giao dịch',headers,'amount',true)}${fieldSelect('map-report-moet','Mã học sinh / mã ngoài',headers,'reportMoet')}${fieldSelect('map-report-payment','Mã khách hàng / TK định danh',headers,'reportPaymentCode')}${fieldSelect('map-report-name','Tên khách hàng',headers,'reportCustomerName')}${fieldSelect('map-report-class','Lớp / địa chỉ',headers,'reportClass')}${fieldSelect('map-report-personal','SĐD cá nhân',headers,'reportPersonalId')}${fieldSelect('map-service-2','Dịch vụ cấp 2 / khoản thu',headers,'serviceLevel2')}${fieldSelect('map-content','Nội dung thanh toán',headers,'content')}${fieldSelect('map-txn','Số tham chiếu / mã giao dịch',headers,'txnId')}${fieldSelect('map-invoice','Mã hóa đơn',headers,'invoiceId')}${fieldSelect('map-date','Ngày thanh toán',headers,'date')}${fieldSelect('map-bank-status','Trạng thái giao dịch',headers,'bankStatus')}</div><p class="mapping-intro"><strong>Mẫu BIDV:</strong> web ưu tiên “Thông tin bổ sung 2” để ghép mã học sinh, dùng “Dịch vụ cấp 2”/nội dung để xác định khoản thu và “Số tham chiếu” làm mã giao dịch. “Mã khách hàng” được lưu riêng để tra cứu, không bắt buộc phải trùng mã học sinh.</p>`;
+    : `<div class="mapping-grid">${fieldSelect('map-amount','Số tiền hóa đơn / giao dịch',headers,'amount',true)}${fieldSelect('map-report-moet','Mã học sinh / mã ngoài',headers,'reportMoet')}${fieldSelect('map-report-payment','Mã khách hàng / TK định danh',headers,'reportPaymentCode')}${fieldSelect('map-report-name','Tên khách hàng',headers,'reportCustomerName')}${fieldSelect('map-report-class','Lớp / địa chỉ',headers,'reportClass')}${fieldSelect('map-report-birth','Ngày sinh học sinh (nếu có)',headers,'reportBirthDate')}${fieldSelect('map-report-personal','SĐD cá nhân',headers,'reportPersonalId')}${fieldSelect('map-service-2','Dịch vụ cấp 2 / khoản thu',headers,'serviceLevel2')}${fieldSelect('map-content','Nội dung thanh toán',headers,'content')}${fieldSelect('map-txn','Số tham chiếu / mã giao dịch',headers,'txnId')}${fieldSelect('map-invoice','Mã hóa đơn',headers,'invoiceId')}${fieldSelect('map-date','Ngày thanh toán',headers,'date')}${fieldSelect('map-bank-status','Trạng thái giao dịch',headers,'bankStatus')}</div><p class="mapping-intro"><strong>Mẫu BIDV:</strong> web ưu tiên “Thông tin bổ sung 2” để ghép mã học sinh, dùng “Dịch vụ cấp 2”/nội dung để xác định khoản thu và “Số tham chiếu” làm mã giao dịch. “Mã khách hàng” được lưu riêng để tra cứu, không bắt buộc phải trùng mã học sinh.</p>`;
   $('#modalBody').innerHTML = `${summary}${fields}${previewHtml(headers, rows)}`;
   $('#modalConfirm').textContent = kind === 'students' ? 'Nhập danh sách' : 'Nhập & đối soát';
   $('#modalBackdrop').classList.add('open');
@@ -540,6 +541,7 @@ async function confirmImport() {
       const paymentCode=cell(row,map,'reportPaymentCode')||cell(row,map,'studentCode');
       const reportName=cell(row,map,'reportCustomerName');
       const reportClass=cell(row,map,'reportClass');
+      const reportBirthDate=normalizeDate(cell(row,map,'reportBirthDate'));
       const reportPersonalId=cell(row,map,'reportPersonalId');
       const student = (reportedMoet?byCode.get(slug(reportedMoet)):null) || (paymentCode?byPaymentCode.get(slug(paymentCode)):null) || (paymentCode?byCode.get(slug(paymentCode)):null);
       const date = normalizeDate(cell(row, map, 'date')); const content = cell(row, map, 'content');
@@ -550,7 +552,7 @@ async function confirmImport() {
       const invoiceId=cell(row,map,'invoiceId');
       const ref = cell(row, map, 'txnId')||invoiceId; const normalizedRef = slug(ref);
       const id = normalizedRef ? `ref:${normalizedRef}` : `row:${slug(date)}:${amount}:${slug(paymentCode)}:${slug(reportedMoet)}:${slug(content)}`;
-      return { id, ref, invoiceId, date, content, amount, feeCategory, feeDetail, reportedStudentCode:reportedMoet, reportedPaymentCode:paymentCode, reportCustomerName:reportName, reportClass, reportPersonalId, serviceLevel2:service2, bankStatus, studentCode:student?.code || '', studentName:student?.name || reportName || '', sourceFile:file.name, importedAt:now, matched:!!student, paymentChannel:'transfer' };
+      return { id, ref, invoiceId, date, content, amount, feeCategory, feeDetail, reportedStudentCode:reportedMoet, reportedPaymentCode:paymentCode, reportCustomerName:reportName, reportClass, reportBirthDate, reportPersonalId, serviceLevel2:service2, bankStatus, studentCode:student?.code || '', studentName:student?.name || reportName || '', sourceFile:file.name, importedAt:now, matched:!!student, paymentChannel:'transfer' };
     }).filter(Boolean);
     // Mỗi món thu có thể được BIDV xuất thành một file riêng (BHYT, BHTT, dịch vụ...).
     // Vì vậy không được xóa toàn bộ giao dịch ngân hàng khi nhập file tiếp theo.
@@ -573,7 +575,7 @@ async function confirmImport() {
       const old=oldById.get(t.id);
       if(!old){added++;continue;}
       updated++;
-      const compareFields=['ref','invoiceId','date','amount','reportedStudentCode','reportedPaymentCode','serviceLevel2','bankStatus','content'];
+      const compareFields=['ref','invoiceId','date','amount','reportedStudentCode','reportedPaymentCode','serviceLevel2','bankStatus','content','reportBirthDate'];
       if(compareFields.some(k=>String(old[k]??'')!==String(t[k]??'')))changed++;
     }
     // putMany ghi đè đúng record có cùng id nhưng không đụng đến record của file/món thu khác.
@@ -721,10 +723,19 @@ function noticeBundleForTransaction(t,student){
   return null;
 }
 function buildStudentReportIndexes(students){
-  const byNameClass=new Map(),nameGroups=new Map(),byPersonalId=new Map();
+  const nameClassGroups=new Map(),nameBirthClassGroups=new Map(),nameGroups=new Map(),byPersonalId=new Map();
   students.forEach(student=>{
-    const nameKey=slug(student.name||''),classKey=slug(student.className||'');
-    if(nameKey&&classKey)byNameClass.set(slug(`${student.name} ${student.className}`),student);
+    const nameKey=slug(student.name||''),classKey=slug(student.className||''),birth=normalizeDate(student.birthDate||'');
+    if(nameKey&&classKey){
+      const key=slug(`${student.name} ${student.className}`);
+      if(!nameClassGroups.has(key))nameClassGroups.set(key,[]);
+      nameClassGroups.get(key).push(student);
+      if(birth){
+        const exact=key+'|'+birth;
+        if(!nameBirthClassGroups.has(exact))nameBirthClassGroups.set(exact,[]);
+        nameBirthClassGroups.get(exact).push(student);
+      }
+    }
     if(nameKey){
       if(!nameGroups.has(nameKey))nameGroups.set(nameKey,[]);
       nameGroups.get(nameKey).push(student);
@@ -732,8 +743,10 @@ function buildStudentReportIndexes(students){
     const pid=String(student.personalId||'').replace(/\s+/g,'');
     if(pid)byPersonalId.set(pid,student);
   });
-  const byUniqueName=new Map([...nameGroups.entries()].filter(([,arr])=>arr.length===1).map(([k,arr])=>[k,arr[0]]));
-  return {byNameClass,byUniqueName,byPersonalId};
+  const unique=groups=>new Map([...groups.entries()].filter(([,arr])=>arr.length===1).map(([key,arr])=>[key,arr[0]]));
+  return {byNameClass:unique(nameClassGroups),byNameClassBirth:unique(nameBirthClassGroups),
+    ambiguousNameClasses:new Set([...nameClassGroups.entries()].filter(([,arr])=>arr.length>1).map(([key])=>key)),
+    byUniqueName:unique(nameGroups),byPersonalId};
 }
 function studentFromBankIdentity(t,indexes){
   const reportName=String(t.reportCustomerName||t.studentName||'').trim();
@@ -742,7 +755,17 @@ function studentFromBankIdentity(t,indexes){
   if(personalId&&indexes.byPersonalId.has(personalId))return indexes.byPersonalId.get(personalId);
 
   if(reportName&&reportClass){
-    const direct=indexes.byNameClass.get(slug(`${reportName} ${reportClass}`));
+    const key=slug(`${reportName} ${reportClass}`);
+    const birth=normalizeDate(t.reportBirthDate||'');
+    if(birth){
+      const exact=indexes.byNameClassBirth.get(key+'|'+birth);
+      if(exact)return exact;
+      // An explicitly supplied birth date must agree. Never fall back to an unrelated pupil.
+      return null;
+    }
+    // Duplicate names in the same class need DOB or an explicit unique student code.
+    if(indexes.ambiguousNameClasses.has(key))return null;
+    const direct=indexes.byNameClass.get(key);
     if(direct)return direct;
   }
   if(reportName){
