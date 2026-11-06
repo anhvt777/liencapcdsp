@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'so-thu-hoc-sinh-liencapcdsp-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v4-recovery-navigation';
+const CACHE_NAME = CACHE_PREFIX + 'v5-readonly-recovery';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './insurance.js', './opening-collections.js', './manifest.json', './icon.svg', './vendor/qrcode.min.js', './vendor/jszip.min.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)));
@@ -13,12 +13,12 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
   const url = new URL(request.url);
-  const isCritical = request.mode === 'navigate' || /\/(index\.html|app\.js|styles\.css|sw\.js)$/.test(url.pathname);
+  const isCritical = request.mode === 'navigate' || /\/(index\.html|app\.js|styles\.css|sw\.js|opening-collections\.js|insurance\.js)$/.test(url.pathname);
   if (isCritical) {
     event.respondWith(fetch(request).then(response => {
       if (response.ok) { const copy=response.clone(); caches.open(CACHE_NAME).then(cache=>cache.put(request,copy)); }
       return response;
-    }).catch(() => caches.match(request).then(cached => cached || caches.match('./index.html'))));
+    }).catch(() => caches.match(request)));
     return;
   }
   event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
