@@ -7,7 +7,7 @@
   <meta name="description" content="Quản lý và đối soát từng khoản thu học sinh. Dữ liệu được lưu cục bộ trên thiết bị đang sử dụng.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; worker-src 'self'; manifest-src 'self'; form-action 'self'">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css?v=20261106recover3">
+  <link rel="stylesheet" href="styles.css?v=20261106opening1">
   <title>Trường Phổ thông Liên cấp Cao đẳng Sư phạm Quảng Trị · Quản lý thu học sinh</title>
 </head>
 <body>
@@ -27,7 +27,7 @@
           <div class="nav-submenu" id="nav-collections" hidden>
             <button class="nav-item nav-child" data-page="fees">Theo dõi phải thu</button>
             <button class="nav-item nav-child" data-page="fee-setup">Thiết lập & phân giao</button>
-            <button class="nav-item nav-child" data-page="opening">Thu trước BIDV</button>
+            <button class="nav-item nav-child" data-page="opening">DS thu trước thu hộ BIDV</button>
           </div>
         </div>
 
@@ -352,15 +352,35 @@
       </section>
 
       <section class="page" id="page-opening">
-  <div class="page-heading"><div><span class="eyebrow">CHUYỂN ĐỔI SỐ LIỆU ĐẦU KỲ</span><h1>Thu trước BIDV</h1><p>Đưa khoản thu đã có chứng từ vào sổ lịch sử mà không giả lập giao dịch BIDV.</p></div></div>
+  <div class="page-heading"><div><span class="eyebrow">DỮ LIỆU NHÀ TRƯỜNG ĐÃ XÁC NHẬN</span><h1>DS thu trước thu hộ BIDV</h1><p>Danh sách học sinh đã nộp trước khi triển khai thu hộ định danh BIDV, được tổng hợp từ dữ liệu trường đã nhập trên thiết bị này.</p></div></div>
   <article class="panel">
-    <div class="panel-header"><div><h2>Xác nhận khoản đã thu trước triển khai</h2><p>Nhập file CSV hoặc XLSX với cột Lớp, Họ và tên, Ngày sinh, Khoản thu, Số tiền dự kiến, Ngày thu thực tế, Xác nhận, Số chứng từ / tham chiếu. Chỉ dòng có Xác nhận = XÁC NHẬN và số tham chiếu mới được ghi sổ.</p></div></div>
-    <div class="mapping-note"><span class="note-icon">!</span><div><strong>Không tự ghi nhận 512 học sinh là đã nộp.</strong><p>Chỉ sử dụng sổ thu, biên lai hoặc sao kê đã kiểm tra. Các món đã xác nhận và khớp khoản phải thu sẽ không được đưa vào QR/BIDV chưa thu; các khoản chưa có nghĩa vụ ghi trên web được lưu sổ lịch sử tách biệt.</p></div></div>
-    <button class="button button-primary" id="openingCollectionsButton">⇧ Nhập bảng xác nhận đã thu</button><input type="file" id="openingCollectionsInput" accept=".xlsx,.csv,.tsv,.txt" hidden>
-    <p class="table-note" id="openingCollectionsStatus">Chưa ghi nhận khoản thu trước BIDV.</p>
-    <div class="table-wrap"><table><thead><tr><th>Lớp</th><th>Học sinh</th><th>Khoản</th><th>Số tiền</th><th>Ngày thu</th><th>Chứng từ</th><th>Hạch toán</th></tr></thead><tbody id="openingCollectionsRows"><tr><td colspan="7">Chưa có dữ liệu.</td></tr></tbody></table></div>
+    <div class="panel-header"><div><h2>Học sinh đã hoàn tất trước BIDV</h2><p>Trạng thái lịch sử do nhà trường xác nhận; không tạo giao dịch BIDV, không tự ghi nhận ngày nộp hoặc số tiền khi chưa có chứng từ chi tiết.</p></div><span class="mini-tag">Dữ liệu đầu kỳ</span></div>
+    <div class="opening-summary-grid">
+      <div class="opening-stat"><span>Đã hoàn tất trước BIDV</span><strong id="openingStudentCount">0</strong><small>học sinh</small></div>
+      <div class="opening-stat"><span>Số lớp có học sinh hoàn tất</span><strong id="openingClassCount">0</strong><small>lớp</small></div>
+      <div class="opening-stat"><span>Học sinh còn khoản phải thu</span><strong id="openingPendingCount">0</strong><small>đang theo dõi thu hộ</small></div>
+    </div>
+    <p id="openingCollectionsStatus" class="table-note">Đang tổng hợp dữ liệu học sinh đã lưu trên máy.</p>
+    <div class="opening-filters">
+      <label class="qr-field"><span>Lọc theo lớp</span><select id="openingClassFilter"><option value="all">Tất cả lớp</option></select></label>
+      <label class="qr-field"><span>Tìm học sinh</span><input id="openingStudentSearch" type="search" placeholder="Họ tên, mã học sinh, lớp"></label>
+      <button class="button button-outline" id="openingExportCsv" type="button">↓ Xuất danh sách CSV</button>
+    </div>
+    <p class="table-note" id="openingVisibleCount">Chưa có dữ liệu.</p>
+    <div class="table-wrap opening-table-wrap"><table><thead><tr><th>STT</th><th>Mã HS theo lớp</th><th>Họ và tên</th><th>Lớp</th><th>Ngày sinh</th><th>Trạng thái</th></tr></thead>
+      <tbody id="openingStudentRows"><tr><td colspan="6" class="empty-cell">Đang tải danh sách.</td></tr></tbody></table></div>
   </article>
+  <details class="opening-legacy-details">
+    <summary>Hồ sơ giao dịch lịch sử có chứng từ (nếu nhà trường cần bổ sung)</summary>
+    <article class="panel">
+      <p class="table-note">Đây là dữ liệu bổ sung tùy chọn, không bắt buộc xác nhận lại danh sách học sinh đã hoàn tất. Chỉ nhập chứng từ thực tế khi cần bổ sung số tiền hoặc ngày thu lịch sử.</p>
+      <button class="button button-outline" id="openingCollectionsButton" type="button">⇧ Nhập bảng chứng từ thu trước BIDV</button>
+      <input type="file" id="openingCollectionsInput" accept=".xlsx,.csv,.tsv,.txt" hidden>
+      <div class="table-wrap"><table><thead><tr><th>Lớp</th><th>Học sinh</th><th>Khoản</th><th>Số tiền</th><th>Ngày thu</th><th>Chứng từ</th><th>Đối soát</th></tr></thead><tbody id="openingCollectionsRows"><tr><td colspan="7" class="empty-cell">Chưa có chứng từ nhập bổ sung.</td></tr></tbody></table></div>
+    </article>
+  </details>
 </section>
+
 <section class="page" id="page-imports">
         <div class="page-heading"><div><span class="eyebrow">CẬP NHẬT DỮ LIỆU</span><h1>Nhập dữ liệu</h1><p>Nhập danh sách học sinh trước, sau đó bổ sung báo cáo thu mới nhất.</p></div></div>
         <div class="import-cards">
@@ -473,8 +493,8 @@
   <div class="receipt-print-root" id="receiptPrintRoot" aria-hidden="true"></div>
   <script src="vendor/qrcode.min.js"></script>
   <script src="vendor/jszip.min.js"></script>
-  <script src="app.js?v=20261106menu4"></script>
-  <script src="opening-collections.js?v=20261105b"></script>
+  <script src="app.js?v=20261106opening1"></script>
+  <script src="opening-collections.js?v=20261106opening1"></script>
   <script src="insurance.js"></script>
 </body>
 </html>
