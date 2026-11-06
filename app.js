@@ -833,18 +833,17 @@ function totals(students, transactions) {
   return {due,paid,remain:Math.max(0,due-paid),dueItems,paidItems,unpaidItems:Math.max(0,dueItems-paidItems),paidByStudent,summaries,pct:due?Math.min(100,Math.round(paid/due*100)):0};
 }
 // Presentation-only conversion: keep the original imported note unchanged in IndexedDB.
+// Imported school-approved legacy status, presented without changing IndexedDB.
 function isSchoolConfirmedPreBidv(student){
-  const raw=slug(student?.note||'');
-  return raw.includes('da hoan tat truoc bidv theo danh sach nha truong') ||
-    raw.includes('da nop truoc khi trien khai thu ho dinh danh bidv');
+ const values=[student?.note,student?.registrationInfo,student?.studentType].map(v=>slug(v||''));
+ return values.some(raw=>raw.includes('da hoan tat truoc bidv theo danh sach nha truong')||
+   raw.includes('da nop truoc khi trien khai thu ho dinh danh bidv'));
 }
-function schoolStudentNote(student){
-  const original=String(student?.note||'').trim();
-  if(isSchoolConfirmedPreBidv(student)){
-    const extra=original.replace(/^Đã hoàn tất trước BIDV theo danh sách nhà trường; chưa cung cấp số tiền\/ngày giao dịch chi tiết\s*[.;]?\s*/i,'').trim();
-    return 'Đã nộp trước khi triển khai thu hộ định danh BIDV'+(extra?' · '+extra:'');
-  }
-  return original;
+function preBidvDisplayNote(value){
+ const original=String(value||'').trim();
+ if(!original)return '';
+ const old=/Đã hoàn tất trước BIDV theo danh sách nhà trường;?\s*chưa cung cấp số tiền\s*\/\s*ngày giao dịch chi tiết/ig;
+ return original.replace(old,'Đã nộp trước khi triển khai thu hộ định danh BIDV');
 }
 function renderStudents(students, transactions) {
   const reconciled=transactions.some(t=>t.paymentStatus)?transactions:reconcileTransactions(students,transactions);
@@ -866,7 +865,7 @@ function renderStudents(students, transactions) {
   $('#studentsTable').innerHTML=filtered.length?filtered.map(s=>{
     const items=studentDueItems(s),due=items.reduce((sum,x)=>sum+x.amount,0);
     const paid=items.filter(item=>paidByItem.has(`${s.code}|${item.id}`)).reduce((sum,x)=>sum+x.amount,0);
-    const sourceNote=[s.studentType,s.registrationInfo,schoolStudentNote(s)].filter(Boolean).join(' · ');
+    const sourceNote=[s.studentType,s.registrationInfo,s.note].filter(Boolean).map(preBidvDisplayNote).join(' · ');
     const warnings=studentWarnings(s),warn=warnings.length?`<span class="student-warning-badge" title="${escapeHTML(warnings.join(' · '))}">⚠ ${warnings.length}</span>`:'';
     const inactive=s.status==='inactive',statusLabel=inactive?(s.inactiveReason==='transfer_school'?'Chuyển trường':'Nghỉ học'):'Đang học';
     return `<tr class="student-master-row ${warnings.length?'has-warning':''} ${inactive?'student-inactive-row':''}" data-student-code="${escapeHTML(s.code)}"><td><strong>${escapeHTML(s.classStudentCode||s.code)}</strong> ${warn}</td><td><strong>${escapeHTML(s.name)}</strong></td><td>${escapeHTML(s.className||'—')}</td><td>${escapeHTML(s.gender||'—')}</td><td>${escapeHTML(s.birthDate||'—')}</td><td><span class="student-status-badge ${inactive?'inactive':'active'}">${statusLabel}</span></td><td>${escapeHTML(sourceNote||'—')}</td><td>${items.length}</td><td>${money(due)}</td><td>${money(paid)}</td><td class="remain-cell"><strong>${money(Math.max(0,due-paid))}</strong></td><td><button class="text-button student-detail-button" data-student-code="${escapeHTML(s.code)}">Chi tiết ›</button></td></tr>`;
