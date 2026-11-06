@@ -2487,14 +2487,25 @@ async function migrateSchool2StudentData(){
   }
 }
 
+function wireNavigation(){
+  if(document.documentElement.dataset.navigationReady==='1')return;
+  document.documentElement.dataset.navigationReady='1';
+  $('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
+  $('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
+    setNavGroupExpanded(btn.dataset.navGroup,btn.getAttribute('aria-expanded')!=='true');
+  }));
+  $('[data-go]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.go)));
+}
+async function inspectLocalStudentCount(){
+  if(!db)return null;
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction('students','readonly'),req=tx.objectStore('students').count();
+    req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+  });
+}
 function wire() {
   if(typeof wireOpeningCollections==='function')wireOpeningCollections();
-  $$('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
-  $$('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
-    const isOpen=btn.getAttribute('aria-expanded')==='true';
-    setNavGroupExpanded(btn.dataset.navGroup,!isOpen);
-  }));
-  $$('[data-go]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.go)));
+  // Navigation is wired before database startup in wireNavigation().
   $('#studentImportButton').onclick=$('#studentImportButton2').onclick=()=>$('#studentFileInput').click();
   $('#bankImportButton').onclick=()=>$('#bankFileInput').click();
   $('#studentFileInput').onchange=e=>{chooseFile('students',e.target.files[0]);e.target.value='';};
@@ -2583,23 +2594,37 @@ function wire() {
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(err=>console.warn('Offline cache:',err));
 }
 document.addEventListener('DOMContentLoaded',async()=>{
-  if(!$('#storageStatus'))return; // Standalone visual tests do not open the production database.
-  try {
+  if(!$('#storageStatus'))return;
+  try{
+    prepareWorkflowPages();
+    wireNavigation();
+  }catch(error){
+    console.error('Lỗi menu:',error);
+  }
+  try{
     db=await openDatabase();
   }catch(error){
-    console.error('Không mở được IndexedDB:',error);
-    $('#storageStatus').textContent='Không truy cập được dữ liệu trên thiết bị';
-    toast('Không mở được dữ liệu trình duyệt. Không xóa dữ liệu trang; hãy kiểm tra quyền lưu trữ.',true);
+    console.error('Lỗi mở IndexedDB:',error);
+    $('#storageStatus').textContent='Chưa truy cập được dữ liệu trên máy';
+    toast('Không thể mở kho dữ liệu: '+(error?.message||error)+'. Không xóa dữ liệu trang.',true);
     return;
   }
+  // Read-only verification first: never migrate or rewrite student data on page load.
   try {
-    prepareWorkflowPages();
-    await migrateSchool2StudentData();
-    wire();
+    const count=await inspectLocalStudentCount();
+    console.info('SchoolCollect: local student records =',count);
+    if(count>0)$('#storageStatus').textContent='Đã kết nối kho dữ liệu · '+count+' học sinh';
+  }catch(error){console.warn('Kiểm tra dữ liệu cục bộ:',error);}
+  try {
     await refresh();
   }catch(error){
-    console.error('Lỗi khởi tạo giao diện / đồng bộ:',error);
-    $('#storageStatus').textContent='Đã mở kho dữ liệu · lỗi khởi tạo giao diện';
-    toast('Ứng dụng gặp lỗi khởi tạo: '+String(error?.message||error)+'. Dữ liệu cục bộ chưa bị xóa.',true);
+    console.error('Lỗi đọc/hiển thị dữ liệu:',error);
+    toast('Đã mở kho dữ liệu nhưng không thể hiển thị: '+(error?.message||error),true);
+  }
+  try{
+    wire();
+  }catch(error){
+    console.error('Lỗi khởi tạo chức năng:',error);
+    toast('Một số thao tác chưa khởi tạo: '+(error?.message||error)+'. Dữ liệu vẫn được giữ nguyên.',true);
   }
 });
