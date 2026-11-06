@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'so-thu-hoc-sinh-liencapcdsp-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v3-navigation-redesign';
+const CACHE_NAME = CACHE_PREFIX + 'v4-recovery-navigation';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './insurance.js', './opening-collections.js', './manifest.json', './icon.svg', './vendor/qrcode.min.js', './vendor/jszip.min.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)));
