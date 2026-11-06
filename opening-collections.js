@@ -52,14 +52,68 @@ async function importOpeningCollections(file){
  await request('history','put',{id:crypto.randomUUID(),kind:'Đối soát thu trước BIDV',fileName:file.name,rows:rows.length-1,imported:pending.length,detail:pending.length+' khoản; '+money(sum)+'; '+toCreate.length+' khoản khớp nghĩa vụ trong web',at:timestamp});
  await refresh();toast('Đã xác nhận '+pending.length+' khoản thu trước BIDV. Bỏ qua '+unconfirmed+' dòng chưa xác nhận, '+invalid+' dòng lỗi, '+duplicates+' dòng trùng.');
 }
+// School-confirmed historical completion register. Do not synthesize BIDV transactions.
+let openingStudentCache=[];
+function openingStudentList(){
+  const classValue=document.getElementById('openingClassFilter')?.value||'all';
+  const search=slug(document.getElementById('openingStudentSearch')?.value||'');
+  return openingStudentCache.filter(x=>(classValue==='all'||x.className===classValue)&&
+    (!search||slug([x.className,x.name,x.code,x.classStudentCode,x.birthDate].join(' ')).includes(search)));
+}
+function renderOpeningStudentRows(){
+  const tbody=document.getElementById('openingStudentRows'),label=document.getElementById('openingVisibleCount');
+  if(!tbody)return;
+  const list=openingStudentList();
+  if(label)label.textContent='Đang hiển thị '+list.length.toLocaleString('vi-VN')+' / '+openingStudentCache.length.toLocaleString('vi-VN')+' học sinh hoàn tất trước BIDV.';
+  tbody.innerHTML=list.length?list.map((s,i)=>'<tr>'+
+    '<td>'+(i+1)+'</td>'+
+    '<td>'+escapeHTML(s.classStudentCode||s.code||'')+'</td>'+
+    '<td><strong>'+escapeHTML(s.name||'')+'</strong></td>'+
+    '<td>'+escapeHTML(s.className||'')+'</td>'+
+    '<td>'+escapeHTML(s.birthDate||'')+'</td>'+
+    '<td>Đã nộp trước khi triển khai thu hộ định danh BIDV</td>'+
+    '</tr>').join(''):'<tr><td colspan="6" class="empty-cell">Không có học sinh phù hợp.</td></tr>';
+}
+function exportOpeningStudentCsv(){
+ const rows=[['STT','Mã học sinh','Mã HS theo lớp','Họ và tên','Lớp','Ngày sinh','Trạng thái']];
+ const list=openingStudentList();list.forEach((s,i)=>rows.push([i+1,s.code,s.classStudentCode||'',s.name,s.className,s.birthDate||'','Đã nộp trước khi triển khai thu hộ định danh BIDV']));
+ const safe=v=>{let t=String(v??'');if(/^[=+@-]/.test(t))t="'"+t;return '"'+t.replace(/"/g,'""')+'"';};
+ const text='\uFEFF'+rows.map(r=>r.map(safe).join(',')).join('\r\n');
+ download('DS_thu_truoc_thu_ho_BIDV_'+new Date().toISOString().slice(0,10)+'.csv',text,'text/csv;charset=utf-8');
+}
 async function renderOpeningCollections(){
- const el=document.getElementById('openingCollectionsStatus'),tbody=document.getElementById('openingCollectionsRows');if(!el||!tbody)return;
- const records=await openingRecords(),total=records.reduce((s,x)=>s+Number(x.amount||0),0),linked=records.filter(x=>x.mode==='matched_due').length;
- el.textContent=records.length+' khoản đã xác nhận trước BIDV · '+money(total)+' · '+linked+' khoản khớp nghĩa vụ web. Không bao gồm dòng chưa được nhà trường xác nhận.';
- tbody.innerHTML=records.length?records.slice(-120).reverse().map(r=>'<tr><td>'+escapeHTML(r.className)+'</td><td>'+escapeHTML(r.studentName)+'</td><td>'+escapeHTML(r.feeName)+'</td><td>'+escapeHTML(money(r.amount))+'</td><td>'+escapeHTML(r.date||'Chưa có ngày')+'</td><td>'+escapeHTML(r.reference)+'</td><td>'+escapeHTML(r.mode==='matched_due'?'Đã đối soát món':'Sổ lịch sử')+'</td></tr>').join(''):'<tr><td colspan="7" class="empty-cell">Chưa có món thu trước BIDV được xác nhận.</td></tr>';
+ const status=document.getElementById('openingCollectionsStatus'),tbody=document.getElementById('openingCollectionsRows');
+ if(!status)return;
+ const students=await all('students');
+ openingStudentCache=students.filter(s=>s.status!=='inactive'&&typeof isSchoolConfirmedPreBidv==='function'&&isSchoolConfirmedPreBidv(s))
+  .sort((a,b)=>String(a.className||'').localeCompare(String(b.className||''),'vi',{numeric:true})||String(a.name||'').localeCompare(String(b.name||''),'vi'));
+ const unfinished=students.filter(s=>s.status!=='inactive'&&studentDueItems(s).length>0);
+ const classes=[...new Set(openingStudentCache.map(s=>s.className).filter(Boolean))];
+ const countEl=document.getElementById('openingStudentCount'),classCountEl=document.getElementById('openingClassCount'),pendingEl=document.getElementById('openingPendingCount');
+ if(countEl)countEl.textContent=openingStudentCache.length.toLocaleString('vi-VN');
+ if(classCountEl)classCountEl.textContent=classes.length.toLocaleString('vi-VN');
+ if(pendingEl)pendingEl.textContent=unfinished.length.toLocaleString('vi-VN');
+ const classSelect=document.getElementById('openingClassFilter');
+ if(classSelect){
+  const prior=classSelect.value||'all';
+  classSelect.innerHTML='<option value="all">Tất cả lớp</option>'+classes.sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})).map(c=>'<option value="'+escapeHTML(c)+'">'+escapeHTML(c)+'</option>').join('');
+  if(classes.includes(prior))classSelect.value=prior;
+ }
+ const countWithoutDue=students.filter(s=>s.status!=='inactive'&&studentDueItems(s).length===0).length;
+ const unknown=Math.max(0,countWithoutDue-openingStudentCache.length);
+ status.textContent='Danh sách đã hoàn tất theo xác nhận nhà trường: '+openingStudentCache.length+' học sinh. Các khoản này không phát sinh giao dịch thu hộ BIDV.'+(unknown?' Có '+unknown+' học sinh không có món phải thu nhưng chưa có ghi chú xác nhận đầu kỳ; cần rà soát riêng.':'');
+ renderOpeningStudentRows();
+ if(!tbody)return;
+ const records=await openingRecords();
+ tbody.innerHTML=records.length?records.slice(-120).reverse().map(r=>'<tr><td>'+escapeHTML(r.className)+'</td><td>'+escapeHTML(r.studentName)+'</td><td>'+escapeHTML(r.feeName)+'</td><td>'+escapeHTML(money(r.amount))+'</td><td>'+escapeHTML(r.date||'Chưa có ngày')+'</td><td>'+escapeHTML(r.reference)+'</td><td>'+escapeHTML(r.mode==='matched_due'?'Đã đối soát món':'Sổ lịch sử')+'</td></tr>').join(''):'<tr><td colspan="7" class="empty-cell">Chưa nhập chứng từ lịch sử chi tiết.</td></tr>';
 }
 function wireOpeningCollections(){
  const input=document.getElementById('openingCollectionsInput'),btn=document.getElementById('openingCollectionsButton');
- if(!input||!btn)return;btn.onclick=()=>input.click();
- input.onchange=async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;try{await importOpeningCollections(file);}catch(err){console.error(err);toast(err.message||'Không thể nhập bảng xác nhận.',true);}};
+ if(input&&btn){
+  btn.onclick=()=>input.click();
+  input.onchange=async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;try{await importOpeningCollections(file);}catch(err){console.error(err);toast(err.message||'Không thể nhập bảng chứng từ.',true);}};
+ }
+ document.getElementById('openingClassFilter')?.addEventListener('change',renderOpeningStudentRows);
+ document.getElementById('openingStudentSearch')?.addEventListener('input',renderOpeningStudentRows);
+ document.getElementById('openingExportCsv')?.addEventListener('click',exportOpeningStudentCsv);
 }
