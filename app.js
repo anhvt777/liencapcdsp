@@ -601,10 +601,50 @@ async function chooseFile(kind, file) {
   try { const rows = await readRows(file); openImportModal(kind, file, rows); }
   catch (error) { console.error(error); toast(error.message || 'Không đọc được file này.', true); }
 }
+
+const NAV_PAGE_GROUPS={
+  fees:'collections','fee-setup':'collections',opening:'collections',
+  'bidv-export':'bidv',qr:'bidv',notices:'bidv',
+  imports:'reconciliation','cash-collection':'reconciliation','manual-import':'reconciliation',
+  history:'reports',receipts:'reports'
+};
+function setNavGroupExpanded(group,expanded){
+  document.querySelectorAll('[data-nav-section]').forEach(section=>{
+    const active=section.dataset.navSection===group;
+    const button=section.querySelector('[data-nav-group]'),submenu=section.querySelector('.nav-submenu');
+    const open=active&&expanded;
+    if(button)button.setAttribute('aria-expanded',String(open));
+    if(submenu)submenu.hidden=!open;
+    section.classList.toggle('expanded',open);
+  });
+}
+function prepareWorkflowPages(){
+  const main=document.querySelector('.main-area');if(!main)return;
+  const destination=(id,eyebrow,title,description)=>{
+    let page=document.getElementById('page-'+id);if(page)return page;
+    page=document.createElement('section');page.className='page';page.id='page-'+id;
+    const heading=document.createElement('div');heading.className='page-heading';
+    const wrap=document.createElement('div'),sub=document.createElement('span'),h=document.createElement('h1'),p=document.createElement('p');
+    sub.className='eyebrow';sub.textContent=eyebrow;h.textContent=title;p.textContent=description;
+    wrap.append(sub,h,p);heading.appendChild(wrap);page.appendChild(heading);
+    main.appendChild(page);return page;
+  };
+  const cash=destination('cash-collection','GHI NHẬN THANH TOÁN','Thu tiền mặt theo phiên','Ghi nhận theo học sinh, từng khoản và đối chiếu số thực nhận trước khi đồng bộ.');
+  const manual=destination('manual-import','CÁC NGUỒN THU NGOÀI BIDV','Nhập thu ngoài BIDV','Nhập file các khoản đã thu qua thủ quỹ hoặc chuyển trực tiếp.');
+  for(const selector of ['.cash-session-card','.cash-entry-card','#cashierFileInput']){
+    const el=document.querySelector(selector);if(el)cash.appendChild(el);
+  }
+  for(const selector of ['.cash-file-card','#manualCollectionFileInput']){
+    const el=document.querySelector(selector);if(el)manual.appendChild(el);
+  }
+}
 function setPage(page) {
   if (page === 'insurance') page = 'dashboard';
   $$('.page').forEach(p => p.classList.toggle('active', p.id === `page-${page}`));
-  $$('.nav-item[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  $('.nav-item[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  const group=NAV_PAGE_GROUPS[page]||'';
+  setNavGroupExpanded(group,!!group);
+  $('.nav-group-toggle').forEach(b=>b.classList.toggle('active',b.dataset.navGroup===group));
   const labels = {
     dashboard:['Tổng quan','Theo dõi tiến độ thu theo thời gian thực trên thiết bị này'],
     students:['Học sinh','Danh sách và số phải thu chi tiết theo từng học sinh'],
@@ -615,6 +655,8 @@ function setPage(page) {
     receipts:['Phiếu thu / Xác nhận','Phát hành chứng từ từ các món đã đối soát thành công'],
     qr:['Tạo mã QR','Tạo QR thanh toán theo từng món thu của từng học sinh'],
     opening:['Thu trước BIDV','Xác nhận khoản thu cũ có chứng từ, không tạo giao dịch ngân hàng'],
+    'cash-collection':['Thu tiền mặt theo phiên','Ghi nhận các khoản thu thực tế ngoài hệ thống BIDV'],
+    'manual-import':['Nhập thu ngoài BIDV','Nhập danh sách thanh toán trực tiếp và đưa vào phiên xác nhận'],
     imports:['Nhập dữ liệu','Cập nhật cộng dồn nhiều báo cáo thu theo từng khoản, tự kiểm tra trùng giao dịch'],
     history:['Tra cứu & báo cáo','Lịch sử các lần nhập dữ liệu trên thiết bị này'],
     settings:['Sao lưu & cài đặt','Bảo vệ và chuyển dữ liệu theo quy trình của trường']
@@ -2447,7 +2489,11 @@ async function migrateSchool2StudentData(){
 
 function wire() {
   if(typeof wireOpeningCollections==='function')wireOpeningCollections();
-  $$('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
+  $('.nav-item[data-page]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
+  $('.nav-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{
+    const isOpen=btn.getAttribute('aria-expanded')==='true';
+    setNavGroupExpanded(btn.dataset.navGroup,!isOpen);
+  }));
   $$('[data-go]').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.go)));
   $('#studentImportButton').onclick=$('#studentImportButton2').onclick=()=>$('#studentFileInput').click();
   $('#bankImportButton').onclick=()=>$('#bankFileInput').click();
@@ -2538,6 +2584,6 @@ function wire() {
 }
 document.addEventListener('DOMContentLoaded',async()=>{
   if(!$('#storageStatus'))return; // Standalone visual tests do not open the production database.
-  try { db=await openDatabase();await migrateSchool2StudentData();wire();await refresh(); }
+  try { prepareWorkflowPages();db=await openDatabase();await migrateSchool2StudentData();wire();await refresh(); }
   catch(error){console.error(error);$('#storageStatus').textContent='Không mở được kho dữ liệu';toast('Trình duyệt không cho phép lưu dữ liệu cục bộ.',true);}
 });
