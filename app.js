@@ -2584,6 +2584,22 @@ function wire() {
 }
 document.addEventListener('DOMContentLoaded',async()=>{
   if(!$('#storageStatus'))return; // Standalone visual tests do not open the production database.
-  try { prepareWorkflowPages();db=await openDatabase();await migrateSchool2StudentData();wire();await refresh(); }
-  catch(error){console.error(error);$('#storageStatus').textContent='Không mở được kho dữ liệu';toast('Trình duyệt không cho phép lưu dữ liệu cục bộ.',true);}
+  try {
+    db=await openDatabase();
+  }catch(error){
+    console.error('Không mở được IndexedDB:',error);
+    $('#storageStatus').textContent='Không truy cập được dữ liệu trên thiết bị';
+    toast('Không mở được dữ liệu trình duyệt. Không xóa dữ liệu trang; hãy kiểm tra quyền lưu trữ.',true);
+    return;
+  }
+  try {
+    prepareWorkflowPages();
+    await migrateSchool2StudentData();
+    wire();
+    await refresh();
+  }catch(error){
+    console.error('Lỗi khởi tạo giao diện / đồng bộ:',error);
+    $('#storageStatus').textContent='Đã mở kho dữ liệu · lỗi khởi tạo giao diện';
+    toast('Ứng dụng gặp lỗi khởi tạo: '+String(error?.message||error)+'. Dữ liệu cục bộ chưa bị xóa.',true);
+  }
 });
