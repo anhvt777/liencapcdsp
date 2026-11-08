@@ -59,6 +59,27 @@
     a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),2000);
   }
+  async function updateParentSummary(){
+    const status=document.getElementById('parentSyncReadiness');
+    if(!status)return;
+    try{
+      const [students,transactions]=await Promise.all([all('students'),all('transactions')]);
+      const active=students.filter(x=>x.status!=='inactive');
+      const due=active.reduce((sum,student)=>sum+studentDueItems(student).filter(x=>Number(x.amount)>0).length,0);
+      const test=transactions.filter(simulate);
+      const set=(id,value)=>{const node=document.getElementById(id);if(node)node.textContent=String(value);};
+      set('parentLocalStudentCount',active.length.toLocaleString('vi-VN'));
+      set('parentLocalChargeCount',due.toLocaleString('vi-VN'));
+      set('parentLocalTestCount',test.length.toLocaleString('vi-VN'));
+      const label=document.getElementById('parentSimulationLabel');
+      if(label)label.textContent=test.length?'Giao dịch giả lập cần loại khỏi sổ trước khi công bố':'Không phát hiện giao dịch TEST qua mã tham chiếu/tệp nguồn';
+      status.textContent=test.length
+        ?'CHƯA ĐỦ ĐIỀU KIỆN CÔNG BỐ: phát hiện '+test.length+' giao dịch giả lập. Hãy sao lưu và khôi phục dữ liệu thật trước khi xuất gói đồng bộ.'
+        :'Đã đọc dữ liệu trên thiết bị. Chỉ xuất bản nháp khi đã xác nhận tất cả thông tin và số liệu từ nhà trường; chưa tự đồng bộ lên Cloudflare.';
+    }catch(err){
+      status.textContent='Chưa đọc được dữ liệu cục bộ: '+(err?.message||err)+'. Không xóa hoặc nhập lại dữ liệu.';
+    }
+  }
   function init(){
     const btn=document.getElementById('parentSyncExport'),msg=document.getElementById('parentSyncMessage');
     if(!btn)return;
@@ -72,6 +93,7 @@
       }catch(e){msg.textContent='Không thể xuất: '+(e?.message||e);}
       finally{btn.disabled=false;}
     });
+    document.querySelector('[data-page="parent-sync"]')?.addEventListener('click',()=>{void updateParentSummary();});
     const link=document.getElementById('parentPortalLink');
     if(link)link.href=PARENT_PORTAL;
   }
