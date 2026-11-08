@@ -197,3 +197,13 @@
 .opening-legacy-details summary{padding:16px 18px;font-weight:600;cursor:pointer;color:#32665e;background:#f8fbfa}
 .opening-legacy-details>.panel{margin:0;border:0;box-shadow:none}
 @media(max-width:700px){.opening-summary-grid{grid-template-columns:1fr 1fr}.opening-stat:last-child{grid-column:1/-1}.opening-filters .qr-field{min-width:100%}.opening-filters button{width:100%}}
+
+/* Shared parent portal dashboard */
+.parent-portal-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 18px}
+.parent-portal-summary>.panel{margin:0;padding:18px 20px;min-width:0}
+.parent-portal-summary strong{display:block;font-size:29px;line-height:1.25;margin:8px 0;color:#086b61;font-variant-numeric:tabular-nums}
+.parent-portal-summary p{font-size:12px;margin:0;color:#607772;line-height:1.5}
+#page-parent-sync>.panel{margin-bottom:16px}
+#page-parent-sync .settings-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#parentSyncReadiness{padding:12px 14px;background:#f7f5ea;border:1px solid #eee0a6;border-radius:9px}
+@media(max-width:780px){.parent-portal-summary{grid-template-columns:1fr}.parent-portal-summary strong{font-size:25px}}
