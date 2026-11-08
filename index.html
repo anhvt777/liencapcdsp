@@ -444,7 +444,14 @@
           <article class="panel setting-card"><div class="setting-icon">⤒</div><h2>Khôi phục dữ liệu</h2><p>Chọn bản sao lưu đã tạo để chuyển dữ liệu sang máy khác. Cần đúng mật khẩu.</p><button class="button button-outline" id="restoreButton">Chọn tệp sao lưu</button></article>
           <article class="panel setting-card danger-card"><div class="setting-icon">⌫</div><h2>Xóa dữ liệu trên máy này</h2><p>Xóa học sinh, giao dịch và lịch sử đã lưu trong trình duyệt hiện tại.</p><button class="button button-danger" id="clearDataButton">Xóa toàn bộ dữ liệu</button></article>
         </div>
-        <div class="privacy-explainer"><span class="privacy-mark">✓</span><div><strong>Dữ liệu không tự đồng bộ giữa các máy.</strong><p>Máy kế toán và máy hiệu trưởng có kho riêng. Muốn chuyển số liệu, hãy tạo bản sao lưu có mật khẩu rồi chuyển tệp theo quy trình nội bộ của trường. GitHub chỉ lưu mã giao diện, không lưu danh sách học sinh.</p></div></div>
+        <article class="panel setting-card" style="margin-top:18px">
+  <h2>Đồng bộ cổng thông tin phụ huynh</h2>
+  <p>Trường Liên cấp CĐSP sử dụng chung nền tảng tra cứu với Trưng Vương nhưng dữ liệu độc lập theo mã trường <strong>LIENCAPCDSP</strong>.</p>
+  <p>Xuất gói dữ liệu chờ duyệt từ kho cục bộ, không tự động gửi học sinh lên Internet. Chỉ công bố qua giao diện quản trị Cloudflare được cấp quyền sau khi kiểm thử và loại giao dịch giả lập.</p>
+  <div class="settings-actions"><button class="button button-primary" id="parentSyncExport" type="button">↓ Xuất dữ liệu đồng bộ phụ huynh</button> <a class="button button-outline" id="parentPortalLink" href="https://school-parent-dev.tuananh0001.workers.dev/" target="_blank" rel="noopener noreferrer">Mở cổng phụ huynh</a></div>
+  <div id="parentSyncMessage" class="table-note" role="status">Chưa xuất dữ liệu. Không đưa tệp JSON lên GitHub.</div>
+</article>
+<div class="privacy-explainer"><span class="privacy-mark">✓</span><div><strong>Dữ liệu không tự đồng bộ giữa các máy.</strong><p>Máy kế toán và máy hiệu trưởng có kho riêng. Muốn chuyển số liệu, hãy tạo bản sao lưu có mật khẩu rồi chuyển tệp theo quy trình nội bộ của trường. GitHub chỉ lưu mã giao diện, không lưu danh sách học sinh.</p></div></div>
       </section>
 
       <footer class="app-footer"><span>SchoolCollect · Sổ thu học sinh</span><span>Chạy cục bộ trên trình duyệt · <span id="storageStatus">Đang kiểm tra kho dữ liệu…</span></span></footer>
@@ -494,5 +501,6 @@
   <script src="app.js?v=20261106dobmatch1"></script>
   <script src="opening-collections.js?v=20261106opening1"></script>
   <script src="insurance.js"></script>
+  <script src="parent-sync.js?v=20261108a"></script>
 </body>
 </html>
