@@ -18,13 +18,16 @@
       name:text(s.name),
       class_name:text(s.className),
       birth_date:iso(s.birthDate),
+      opening_status:(typeof isSchoolConfirmedPreBidv==='function'&&isSchoolConfirmedPreBidv(s))?'COMPLETED_BEFORE_BIDV':'NOT_RECORDED',
       charges:studentDueItems(s).filter(x=>x.amount>0).map(x=>({
         charge_id:text(x.id),
         category:text(x.category),
         name:text(x.name),
         amount_due:Number(x.amount),
         payment_reference:text(x.paymentCode||x.qrAccountNumber),
-        period:'2026-2027'
+        period:'2026-2027',
+        qr_status:'PENDING_VERIFICATION',
+        qr_payload:null
       }))
     }));
     const payments=valid.filter(t=>!simulate(t)).map(t=>{
@@ -46,7 +49,7 @@
       academic_year:COURSE,generated_at:new Date().toISOString(),
       status:'DRAFT_REQUIRES_APPROVAL',
       students:items,payments,
-      validation:{simulated_transactions:test.length,publish_blocked:test.length>0,
+      validation:{simulated_transactions:test.length,publish_blocked:test.length>0,opening_completed:items.filter(s=>s.opening_status==='COMPLETED_BEFORE_BIDV').length,
         note:'Chưa duyệt công bố. Không gửi tự động. QR chỉ hiển thị khi đã có nguồn được kiểm chứng.'}
     };
   }
