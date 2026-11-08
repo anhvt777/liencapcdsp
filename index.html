@@ -7,7 +7,7 @@
   <meta name="description" content="Quản lý và đối soát từng khoản thu học sinh. Dữ liệu được lưu cục bộ trên thiết bị đang sử dụng.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; worker-src 'self'; manifest-src 'self'; form-action 'self'">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css?v=20261106opening1">
+  <link rel="stylesheet" href="styles.css?v=20261109parentnav1">
   <title>Trường Phổ thông Liên cấp Cao đẳng Sư phạm Quảng Trị · Quản lý thu học sinh</title>
 </head>
 <body>
@@ -53,6 +53,14 @@
           <div class="nav-submenu" id="nav-reports" hidden>
             <button class="nav-item nav-child" data-page="history">Tra cứu & báo cáo</button>
             <button class="nav-item nav-child" data-page="receipts">Phiếu thu / Xác nhận</button>
+          </div>
+        </div>
+        <div class="nav-section" data-nav-section="parents">
+          <button class="nav-item nav-group-toggle" type="button" data-nav-group="parents" aria-expanded="false" aria-controls="nav-parents"><span class="nav-icon" aria-hidden="true">♧</span><span class="nav-group-label">Cổng phụ huynh</span><span class="nav-chevron" aria-hidden="true">⌄</span></button>
+          <div class="nav-submenu" id="nav-parents" hidden>
+            <button class="nav-item nav-child" data-page="parent-sync">Chuẩn bị & đồng bộ</button>
+            <a class="nav-item nav-child qr-external-link" href="https://school-parent-dev.tuananh0001.workers.dev/" target="_blank" rel="noopener noreferrer">Mở cổng tra cứu <span class="external-link-mark" aria-hidden="true">↗</span></a>
+            <a class="nav-item nav-child qr-external-link" href="https://school-parent-dev.tuananh0001.workers.dev/admin/multi-school" target="_blank" rel="noopener noreferrer">Quản trị đồng bộ <span class="external-link-mark" aria-hidden="true">↗</span></a>
           </div>
         </div>
       </nav>
@@ -437,13 +445,14 @@
         <article class="panel table-panel"><div class="panel-header"><div><h2>Lịch sử nhập file</h2><p>Nhật ký chỉ lưu trên máy đang sử dụng</p></div></div><div class="table-wrap"><table><thead><tr><th>THỜI GIAN</th><th>LOẠI FILE</th><th>TÊN FILE</th><th>SỐ DÒNG</th><th>KẾT QUẢ</th></tr></thead><tbody id="historyTable"><tr><td colspan="5" class="empty-cell">Chưa có lịch sử nhập file.</td></tr></tbody></table></div></article>
       </section>
 
-      <section class="page" id="page-settings">
-        <div class="page-heading"><div><span class="eyebrow">AN TOÀN DỮ LIỆU</span><h1>Sao lưu & cài đặt</h1><p>Quản lý dữ liệu đang lưu trên thiết bị này.</p></div></div>
-        <div class="settings-grid">
-          <article class="panel setting-card"><div class="setting-icon">⤓</div><h2>Sao lưu dữ liệu</h2><p>Tải xuống bản sao lưu được mã hóa bằng mật khẩu, gồm học sinh, khoản thu, giao dịch và nhật ký.</p><button class="button button-primary" id="backupButton">Tạo bản sao lưu</button></article>
-          <article class="panel setting-card"><div class="setting-icon">⤒</div><h2>Khôi phục dữ liệu</h2><p>Chọn bản sao lưu đã tạo để chuyển dữ liệu sang máy khác. Cần đúng mật khẩu.</p><button class="button button-outline" id="restoreButton">Chọn tệp sao lưu</button></article>
-          <article class="panel setting-card danger-card"><div class="setting-icon">⌫</div><h2>Xóa dữ liệu trên máy này</h2><p>Xóa học sinh, giao dịch và lịch sử đã lưu trong trình duyệt hiện tại.</p><button class="button button-danger" id="clearDataButton">Xóa toàn bộ dữ liệu</button></article>
+      <section class="page" id="page-parent-sync">
+        <div class="page-heading"><div><span class="eyebrow">KẾT NỐI CỔNG TRA CỨU DÙNG CHUNG</span><h1>Cổng phụ huynh</h1><p>Chuẩn bị và đồng bộ hồ sơ học sinh, khoản thu và giao dịch đã đối soát, tách biệt theo mã trường LIENCAPCDSP.</p></div><span class="mini-tag">Chờ nhà trường duyệt</span></div>
+        <div class="parent-portal-summary">
+          <article class="panel"><span class="eyebrow">HỌC SINH CỤC BỘ</span><strong id="parentLocalStudentCount">—</strong><p>Hồ sơ lưu trong trình duyệt này</p></article>
+          <article class="panel"><span class="eyebrow">MÓN CÒN THEO DÕI</span><strong id="parentLocalChargeCount">—</strong><p>Khoản thu đang quản lý tại trường</p></article>
+          <article class="panel"><span class="eyebrow">GIAO DỊCH GIẢ LẬP</span><strong id="parentLocalTestCount">—</strong><p id="parentSimulationLabel">Kiểm tra dữ liệu TEST hiện tại</p></article>
         </div>
+        <article class="panel"><div class="panel-header"><div><h2>Quy trình đồng bộ</h2><p>1. Sao lưu → 2. Xuất JSON chờ duyệt → 3. Cán bộ đăng nhập Cloudflare Access để xem trước và xác nhận → 4. Công bố sau khi đã kiểm tra các giao dịch và QR.</p></div></div><p class="table-note" id="parentSyncReadiness" role="status">Đang kiểm tra dữ liệu cục bộ…</p><p class="table-note">Khoản đã hoàn tất trước BIDV giữ trạng thái lịch sử, không tính thành giao dịch BIDV. QR chỉ hiển thị khi đã được nhà trường xác minh và duyệt.</p></article>
         <article class="panel setting-card" style="margin-top:18px">
   <h2>Đồng bộ cổng thông tin phụ huynh</h2>
   <p>Trường Liên cấp CĐSP sử dụng chung nền tảng tra cứu với Trưng Vương nhưng dữ liệu độc lập theo mã trường <strong>LIENCAPCDSP</strong>.</p>
@@ -451,6 +460,17 @@
   <div class="settings-actions"><button class="button button-primary" id="parentSyncExport" type="button">↓ Xuất gói chờ duyệt (chưa đồng bộ)</button> <a class="button button-outline" id="parentPortalLink" href="https://school-parent-dev.tuananh0001.workers.dev/" target="_blank" rel="noopener noreferrer">Mở cổng phụ huynh</a> <a class="button button-outline" href="https://school-parent-dev.tuananh0001.workers.dev/admin/multi-school" target="_blank" rel="noopener noreferrer">Quản trị đồng bộ đa trường ↗</a></div>
   <div id="parentSyncMessage" class="table-note" role="status">Cổng đã đăng ký trường ở trạng thái chưa công bố. Đã có API và trang quản trị đa trường được bảo vệ bằng Cloudflare Access. Hãy loại bỏ giao dịch TEST trước khi gửi gói chờ duyệt. Không đưa tệp JSON lên GitHub.</div>
 </article>
+
+        <article class="panel"><div class="panel-header"><div><h2>Đối chiếu và chuyển QR</h2><p>Chưa bật tự động chuyển QR tại trường Liên cấp. Cần kiểm chứng nguồn QR, mã khoản thu, tài khoản định danh và số tiền trước khi công bố.</p></div></div><p class="table-note">Không dùng QR thử nghiệm Trưng Vương hoặc tự tạo QR khác với QR đã được nhà trường phê duyệt.</p></article>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="page-heading"><div><span class="eyebrow">AN TOÀN DỮ LIỆU</span><h1>Sao lưu & cài đặt</h1><p>Quản lý dữ liệu đang lưu trên thiết bị này.</p></div></div>
+        <div class="settings-grid">
+          <article class="panel setting-card"><div class="setting-icon">⤓</div><h2>Sao lưu dữ liệu</h2><p>Tải xuống bản sao lưu được mã hóa bằng mật khẩu, gồm học sinh, khoản thu, giao dịch và nhật ký.</p><button class="button button-primary" id="backupButton">Tạo bản sao lưu</button></article>
+          <article class="panel setting-card"><div class="setting-icon">⤒</div><h2>Khôi phục dữ liệu</h2><p>Chọn bản sao lưu đã tạo để chuyển dữ liệu sang máy khác. Cần đúng mật khẩu.</p><button class="button button-outline" id="restoreButton">Chọn tệp sao lưu</button></article>
+          <article class="panel setting-card danger-card"><div class="setting-icon">⌫</div><h2>Xóa dữ liệu trên máy này</h2><p>Xóa học sinh, giao dịch và lịch sử đã lưu trong trình duyệt hiện tại.</p><button class="button button-danger" id="clearDataButton">Xóa toàn bộ dữ liệu</button></article>
+        </div>
 <div class="privacy-explainer"><span class="privacy-mark">✓</span><div><strong>Dữ liệu không tự đồng bộ giữa các máy.</strong><p>Máy kế toán và máy hiệu trưởng có kho riêng. Muốn chuyển số liệu, hãy tạo bản sao lưu có mật khẩu rồi chuyển tệp theo quy trình nội bộ của trường. GitHub chỉ lưu mã giao diện, không lưu danh sách học sinh.</p></div></div>
       </section>
 
@@ -498,9 +518,9 @@
   <div class="receipt-print-root" id="receiptPrintRoot" aria-hidden="true"></div>
   <script src="vendor/qrcode.min.js"></script>
   <script src="vendor/jszip.min.js"></script>
-  <script src="app.js?v=20261106dobmatch1"></script>
+  <script src="app.js?v=20261109parentnav1"></script>
   <script src="opening-collections.js?v=20261106opening1"></script>
   <script src="insurance.js"></script>
-  <script src="parent-sync.js?v=20261108b"></script>
+  <script src="parent-sync.js?v=20261109parentnav1"></script>
 </body>
 </html>
