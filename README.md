@@ -36,3 +36,12 @@ Kế thừa mã nguồn tại: https://github.com/anhvt777/thcs_so2_hieugiang . 
 - Tab **Thu trước BIDV**: chọn bảng CSV xác nhận; chỉ dòng có `XÁC NHẬN` và tham chiếu chứng từ mới được ghi nhận, hỏi lại trước khi ghi. Khoản đã có nghĩa vụ trong hệ thống sẽ đối soát vào sổ giao dịch, ngăn xuất lại; khoản không có nghĩa vụ được lưu hồ sơ lịch sử tách biệt.
 - Tab **Bảng kê BIDV** và **Xuất QR theo món**: luôn bật `Chỉ xuất các khoản chưa thu`; cấu hình kỳ thu và mã định danh theo hợp đồng thực tế trước khi phát hành.
 - Chỉ lưu file danh sách học sinh và file xác nhận trên thiết bị trường, không upload lên repo public.
+
+## Kết nối nền tảng cổng phụ huynh dùng chung (08/11/2026)
+
+- Cổng Cloudflare hiện tại: `school-parent-dev.tuananh0001.workers.dev`. School ID dành riêng cho trường là `LIENCAPCDSP`, đăng ký trong D1 ở trạng thái `active=0` (chưa công bố). Trưng Vương được giữ nguyên.
+- Tab **Sao lưu & cài đặt → Xuất gói chờ duyệt** xuất JSON `school-parent-sync/2` từ IndexedDB của đúng trình duyệt đang sử dụng. Ứng dụng **không truyền tự động** thông tin học sinh, số tiền hoặc giao dịch lên mạng.
+- Gói gồm: hồ sơ học sinh, các khoản đang phải thu, tham chiếu thanh toán đã gán, giao dịch thực tế đã đối soát. Các giao dịch giả lập `TESTBIDV` bị loại khỏi nhóm thanh toán và gói được đánh dấu `publish_blocked=true` nếu có giao dịch thử nghiệm trong sổ.
+- **Cổng đang vận hành chưa hỗ trợ nhập/giao dịch thật của Liên cấp**: API `/api/admin/sync` mới chỉ hỗ trợ dữ liệu demo Trưng Vương. Cần xây dựng API quản trị tổng quát, xác thực Cloudflare Access, kiểm duyệt gói, kiểm tra trùng, mã tra cứu riêng, phân quyền dữ liệu theo school_id, QR được trường duyệt và thử nghiệm end-to-end trước khi bật `active=1`.
+- Không gửi bản JSON có họ tên/ngày sinh cho bất kỳ trang công khai hoặc repository GitHub; sử dụng kênh nội bộ có phân quyền sau khi backend sẵn sàng. Cần duy trì quyết định đồng ý và thông báo xử lý dữ liệu cá nhân phù hợp của nhà trường.
+- Cổng phụ huynh không được hiển thị QR mới được sinh độc lập hoặc tự chuyển QR chưa được nhà trường phê duyệt; chỉ nhận dữ liệu QR kiểm chứng từ nguồn trường.
