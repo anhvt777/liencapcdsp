@@ -608,7 +608,8 @@ const NAV_PAGE_GROUPS={
   fees:'collections','fee-setup':'collections',opening:'collections',
   'bidv-export':'bidv',qr:'bidv',notices:'bidv',
   imports:'reconciliation','cash-collection':'reconciliation','manual-import':'reconciliation',
-  history:'reports',receipts:'reports'
+  history:'reports',receipts:'reports',
+  'parent-sync':'parents'
 };
 function setNavGroupExpanded(group,expanded){
   document.querySelectorAll('[data-nav-section]').forEach(section=>{
@@ -661,6 +662,7 @@ function setPage(page) {
     'manual-import':['Nhập thu ngoài BIDV','Nhập danh sách thanh toán trực tiếp và đưa vào phiên xác nhận'],
     imports:['Nhập dữ liệu','Cập nhật cộng dồn nhiều báo cáo thu theo từng khoản, tự kiểm tra trùng giao dịch'],
     history:['Tra cứu & báo cáo','Lịch sử các lần nhập dữ liệu trên thiết bị này'],
+    'parent-sync':['Cổng phụ huynh','Chuẩn bị, đối chiếu và duyệt dữ liệu đồng bộ đến cổng tra cứu dùng chung'],
     settings:['Sao lưu & cài đặt','Bảo vệ và chuyển dữ liệu theo quy trình của trường']
   };
   $('#topTitle').textContent = labels[page]?.[0] || 'SchoolCollect';
