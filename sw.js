@@ -1,6 +1,6 @@
 const CACHE_PREFIX = 'so-thu-hoc-sinh-liencapcdsp-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v8-birthdate-reconciliation';
-const SHELL = ['./', './index.html', './styles.css', './app.js', './insurance.js', './opening-collections.js', './manifest.json', './icon.svg', './vendor/qrcode.min.js', './vendor/jszip.min.js'];
+const CACHE_NAME = CACHE_PREFIX + 'v9-parent-portal-export';
+const SHELL = ['./', './index.html', './styles.css', './app.js', './insurance.js', './opening-collections.js', './parent-sync.js', './manifest.json', './icon.svg', './vendor/qrcode.min.js', './vendor/jszip.min.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)));
   self.skipWaiting();
